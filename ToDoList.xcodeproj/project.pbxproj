@@ -13,6 +13,13 @@
 		4702A6492CEBCC7100E81CBC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4702A63F2CEBCC7100E81CBC /* Assets.xcassets */; };
 		4702A64B2CEBCC7100E81CBC /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4702A6422CEBCC7100E81CBC /* LaunchScreen.storyboard */; };
 		4702A64E2CEBCE3400E81CBC /* ExtentionUIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4702A64D2CEBCE3400E81CBC /* ExtentionUIColor.swift */; };
+		4702A6502CEBD36900E81CBC /* PreviewVCExtention.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4702A64F2CEBD36900E81CBC /* PreviewVCExtention.swift */; };
+		4702A6542CEBD93500E81CBC /* ViewConfigurableProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4702A6532CEBD93500E81CBC /* ViewConfigurableProtocol.swift */; };
+		477C2B482CED14110085CDED /* SF-Pro-Text-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 477C2B472CED14110085CDED /* SF-Pro-Text-Regular.otf */; };
+		477C2B4A2CED15400085CDED /* ExtentionUIFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = 477C2B492CED15400085CDED /* ExtentionUIFont.swift */; };
+		477C2B4B2CED18400085CDED /* SF-Pro-Text-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = 477C2B452CED14010085CDED /* SF-Pro-Text-Medium.otf */; };
+		477C2B4C2CED184B0085CDED /* SF-Pro-Text-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 477C2B432CED13F10085CDED /* SF-Pro-Text-Bold.otf */; };
+		47DD891D2D259E4100AAA80F /* TaskViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47DD891C2D259E4100AAA80F /* TaskViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +31,13 @@
 		4702A6432CEBCC7100E81CBC /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		4702A6442CEBCC7100E81CBC /* ToDoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToDoViewController.swift; sourceTree = "<group>"; };
 		4702A64D2CEBCE3400E81CBC /* ExtentionUIColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtentionUIColor.swift; sourceTree = "<group>"; };
+		4702A64F2CEBD36900E81CBC /* PreviewVCExtention.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewVCExtention.swift; sourceTree = "<group>"; };
+		4702A6532CEBD93500E81CBC /* ViewConfigurableProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewConfigurableProtocol.swift; sourceTree = "<group>"; };
+		477C2B432CED13F10085CDED /* SF-Pro-Text-Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF-Pro-Text-Bold.otf"; sourceTree = "<group>"; };
+		477C2B452CED14010085CDED /* SF-Pro-Text-Medium.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF-Pro-Text-Medium.otf"; sourceTree = "<group>"; };
+		477C2B472CED14110085CDED /* SF-Pro-Text-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF-Pro-Text-Regular.otf"; sourceTree = "<group>"; };
+		477C2B492CED15400085CDED /* ExtentionUIFont.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtentionUIFont.swift; sourceTree = "<group>"; };
+		47DD891C2D259E4100AAA80F /* TaskViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -44,6 +58,7 @@
 				4702A6272CEBC9EB00E81CBC /* Products */,
 			);
 			sourceTree = "<group>";
+			usesTabs = 0;
 		};
 		4702A6272CEBC9EB00E81CBC /* Products */ = {
 			isa = PBXGroup;
@@ -58,11 +73,10 @@
 			children = (
 				4702A64C2CEBCC7900E81CBC /* ToDoController */,
 				4702A63E2CEBCC7100E81CBC /* AppDelegate.swift */,
-				4702A63F2CEBCC7100E81CBC /* Assets.xcassets */,
+				477C2B192CED09C10085CDED /* Resources */,
 				4702A6402CEBCC7100E81CBC /* Info.plist */,
 				4702A6422CEBCC7100E81CBC /* LaunchScreen.storyboard */,
 				4702A6432CEBCC7100E81CBC /* SceneDelegate.swift */,
-				4702A64D2CEBCE3400E81CBC /* ExtentionUIColor.swift */,
 			);
 			path = ToDoList;
 			sourceTree = "<group>";
@@ -71,8 +85,32 @@
 			isa = PBXGroup;
 			children = (
 				4702A6442CEBCC7100E81CBC /* ToDoViewController.swift */,
+				47DD891C2D259E4100AAA80F /* TaskViewController.swift */,
 			);
 			path = ToDoController;
+			sourceTree = "<group>";
+		};
+		477C2B192CED09C10085CDED /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				477C2B1A2CED09F90085CDED /* Fonts */,
+				4702A63F2CEBCC7100E81CBC /* Assets.xcassets */,
+				4702A64D2CEBCE3400E81CBC /* ExtentionUIColor.swift */,
+				4702A64F2CEBD36900E81CBC /* PreviewVCExtention.swift */,
+				4702A6532CEBD93500E81CBC /* ViewConfigurableProtocol.swift */,
+				477C2B492CED15400085CDED /* ExtentionUIFont.swift */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		477C2B1A2CED09F90085CDED /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				477C2B432CED13F10085CDED /* SF-Pro-Text-Bold.otf */,
+				477C2B452CED14010085CDED /* SF-Pro-Text-Medium.otf */,
+				477C2B472CED14110085CDED /* SF-Pro-Text-Regular.otf */,
+			);
+			path = Fonts;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -136,7 +174,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				477C2B482CED14110085CDED /* SF-Pro-Text-Regular.otf in Resources */,
+				477C2B4C2CED184B0085CDED /* SF-Pro-Text-Bold.otf in Resources */,
 				4702A6492CEBCC7100E81CBC /* Assets.xcassets in Resources */,
+				477C2B4B2CED18400085CDED /* SF-Pro-Text-Medium.otf in Resources */,
 				4702A64B2CEBCC7100E81CBC /* LaunchScreen.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -149,7 +190,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				4702A6462CEBCC7100E81CBC /* AppDelegate.swift in Sources */,
+				477C2B4A2CED15400085CDED /* ExtentionUIFont.swift in Sources */,
+				4702A6502CEBD36900E81CBC /* PreviewVCExtention.swift in Sources */,
 				4702A6472CEBCC7100E81CBC /* SceneDelegate.swift in Sources */,
+				4702A6542CEBD93500E81CBC /* ViewConfigurableProtocol.swift in Sources */,
+				47DD891D2D259E4100AAA80F /* TaskViewController.swift in Sources */,
 				4702A64E2CEBCE3400E81CBC /* ExtentionUIColor.swift in Sources */,
 				4702A6482CEBCC7100E81CBC /* ToDoViewController.swift in Sources */,
 			);
@@ -183,7 +228,7 @@
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 15;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -215,7 +260,7 @@
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 15;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

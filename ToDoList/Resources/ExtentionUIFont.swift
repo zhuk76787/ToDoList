@@ -8,9 +8,6 @@
 import UIKit
 
 extension UIFont {
-    enum SFPro{
-        
-    }
     enum SFProText: String {
         case regular = "SFProText-Regular"
         case bold = "SFProText-Bold"
