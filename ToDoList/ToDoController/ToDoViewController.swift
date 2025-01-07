@@ -10,14 +10,30 @@ import UIKit
 final class ToDoViewController: UIViewController {
     
     // MARK: - UI Element
-    lazy var taskLable: UILabel = {
+    private lazy var taskLable: UILabel = {
         let label = UILabel()
         label.font = .sfProText(.regular, size: 11)
-        label.text = "Нет задач"
+        label.text = "\(viewModel.task.count) задач"
         label.textAlignment = .center // Центрируем текст
         label.textColor = .customWhite  // Белый цвет текста
         label.translatesAutoresizingMaskIntoConstraints = false // Важно для работы констрейтов
         return label
+    }()
+    
+    private lazy var tableView: UITableView = {
+        let tableView = UITableView()
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.backgroundColor = .customBlack
+        tableView.dataSource = self
+        tableView.delegate = self
+        tableView.register(
+            ToDoTableViewCell.self,
+            forCellReuseIdentifier: ToDoTableViewCell.identifier
+        )
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 106
+        tableView.reloadData()
+        return tableView
     }()
     
     // MARK: - Private Priorites
@@ -28,6 +44,7 @@ final class ToDoViewController: UIViewController {
         return toolBar
     }()
     
+    private let viewModel = TaskViewModel()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,7 +52,6 @@ final class ToDoViewController: UIViewController {
         configureView()
         setupNavigationBar()
         setupToolBar()
-        
     }
     
     // MARK: - Private Methods
@@ -53,7 +69,6 @@ final class ToDoViewController: UIViewController {
         searchController.searchBar.delegate = self
         searchController.searchBar.placeholder = "Search"
         
-        
         let searchTextField = searchController.searchBar.searchTextField
         searchTextField.backgroundColor = .customGray
         searchTextField.textColor = .customWhite
@@ -61,7 +76,11 @@ final class ToDoViewController: UIViewController {
         
         // Настройка кнопки микрофона
         let micImage = UIImage(systemName: "mic.fill")
-        searchController.searchBar.setImage(micImage, for: .bookmark, state: .normal)
+        searchController.searchBar.setImage(
+            micImage,
+            for: .bookmark,
+            state: .normal
+        )
         searchController.searchBar.tintColor = .customWhite
         searchController.searchBar.showsBookmarkButton = true
         
@@ -102,7 +121,11 @@ final class ToDoViewController: UIViewController {
         addTaskButton.tintColor = .customYellow
         
         // Гибкие спейсеры
-        let flexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        let flexibleSpace = UIBarButtonItem(
+            barButtonSystemItem: .flexibleSpace,
+            target: nil,
+            action: nil
+        )
         
         // Устанавливаем элементы в ToolBar
         toolBar.items = [flexibleSpace, taskCounterItem, flexibleSpace, addTaskButton]
@@ -110,17 +133,26 @@ final class ToDoViewController: UIViewController {
     
     
     @objc private func addTask() {
-        print("kjbjk")
+        let taskViewController = TaskViewController()
+        taskViewController.delegate = self
+        navigationController?.pushViewController(taskViewController, animated: true)
     }
 }
 
 extension ToDoViewController: ViewConfigurable {
     func addSubviews() {
-        view.addSubview(toolBar)
+        [tableView, toolBar].forEach {
+            view.addSubview($0)
+        }
     }
     
     func addConstraints() {
         NSLayoutConstraint.activate([
+            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            tableView.bottomAnchor.constraint(equalTo: toolBar.topAnchor),
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            
             toolBar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             toolBar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             toolBar.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
@@ -143,5 +175,46 @@ extension ToDoViewController: UISearchResultsUpdating {
 extension ToDoViewController: UISearchBarDelegate {
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         searchController.searchBar.text = ""
+    }
+}
+
+// MARK: - UITableViewDataSource
+
+extension ToDoViewController: UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        viewModel.task.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(
+            withIdentifier: ToDoTableViewCell.identifier,
+            for: indexPath
+        ) as? ToDoTableViewCell else {
+            return UITableViewCell()
+        }
+        
+        let task = viewModel.task[indexPath.row]
+        cell.configure(with: task,at: indexPath)
+        
+        // Уведомляем об изменении состояния задачи
+        cell.onTaskCompletionChanged = { [weak self] indexPath, isCompleted in
+            self?.viewModel.task[indexPath.row]["isCompleted"] = isCompleted
+            print("Task updated at index \(indexPath.row), isCompleted: \(isCompleted)")
+        }
+        
+        return cell
+    }
+}
+
+extension ToDoViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+    }
+}
+
+extension ToDoViewController: TaskCreationDelegate {
+    func didCreateTask(task: String) {
+        viewModel.addTask(taskName: task)
+        tableView.reloadData()
     }
 }
