@@ -22,7 +22,6 @@
 		47C7E6FF2D286CEA009E6C8E /* ToDoTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47C7E6FE2D286CEA009E6C8E /* ToDoTableViewCell.swift */; };
 		47C7E7022D294963009E6C8E /* TaskModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47C7E7012D294963009E6C8E /* TaskModel.swift */; };
 		47C7E7052D294D1E009E6C8E /* TaskViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47C7E7042D294D1E009E6C8E /* TaskViewModel.swift */; };
-		47CC964A2D2C6BDD00E25F7D /* ToDoModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 47CC96482D2C6BDD00E25F7D /* ToDoModel.xcdatamodeld */; };
 		47DD891D2D259E4100AAA80F /* TaskViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47DD891C2D259E4100AAA80F /* TaskViewController.swift */; };
 /* End PBXBuildFile section */
 
@@ -44,7 +43,6 @@
 		47C7E6FE2D286CEA009E6C8E /* ToDoTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToDoTableViewCell.swift; sourceTree = "<group>"; };
 		47C7E7012D294963009E6C8E /* TaskModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskModel.swift; sourceTree = "<group>"; };
 		47C7E7042D294D1E009E6C8E /* TaskViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskViewModel.swift; sourceTree = "<group>"; };
-		47CC96492D2C6BDD00E25F7D /* ToDoModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = ToDoModel.xcdatamodel; sourceTree = "<group>"; };
 		47DD891C2D259E4100AAA80F /* TaskViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -79,7 +77,6 @@
 		4702A6452CEBCC7100E81CBC /* ToDoList */ = {
 			isa = PBXGroup;
 			children = (
-				47CC96472D2C6B6E00E25F7D /* CoreData */,
 				47C7E7032D294CFC009E6C8E /* ViewModel */,
 				47C7E7002D29472F009E6C8E /* Model */,
 				4702A64C2CEBCC7900E81CBC /* ToDoController */,
@@ -139,14 +136,6 @@
 				47C7E7042D294D1E009E6C8E /* TaskViewModel.swift */,
 			);
 			path = ViewModel;
-			sourceTree = "<group>";
-		};
-		47CC96472D2C6B6E00E25F7D /* CoreData */ = {
-			isa = PBXGroup;
-			children = (
-				47CC96482D2C6BDD00E25F7D /* ToDoModel.xcdatamodeld */,
-			);
-			path = CoreData;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -230,7 +219,6 @@
 				477C2B4A2CED15400085CDED /* ExtentionUIFont.swift in Sources */,
 				47C7E7022D294963009E6C8E /* TaskModel.swift in Sources */,
 				4702A6502CEBD36900E81CBC /* PreviewVCExtention.swift in Sources */,
-				47CC964A2D2C6BDD00E25F7D /* ToDoModel.xcdatamodeld in Sources */,
 				4702A6472CEBCC7100E81CBC /* SceneDelegate.swift in Sources */,
 				4702A6542CEBD93500E81CBC /* ViewConfigurableProtocol.swift in Sources */,
 				47DD891D2D259E4100AAA80F /* TaskViewController.swift in Sources */,
@@ -459,19 +447,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCVersionGroup section */
-		47CC96482D2C6BDD00E25F7D /* ToDoModel.xcdatamodeld */ = {
-			isa = XCVersionGroup;
-			children = (
-				47CC96492D2C6BDD00E25F7D /* ToDoModel.xcdatamodel */,
-			);
-			currentVersion = 47CC96492D2C6BDD00E25F7D /* ToDoModel.xcdatamodel */;
-			path = ToDoModel.xcdatamodeld;
-			sourceTree = "<group>";
-			versionGroupType = wrapper.xcdatamodel;
-		};
-/* End XCVersionGroup section */
 	};
 	rootObject = 4702A61E2CEBC9EB00E81CBC /* Project object */;
 }
