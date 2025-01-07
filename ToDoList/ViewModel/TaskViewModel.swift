@@ -8,22 +8,17 @@
 import Foundation
 
 final class TaskViewModel {
-    var task: [[String : Any]] = [
-        ["taskName": "Заняться спортом \n Сходить в спортзал или сделать тренировку дома. Не забыть про разминку и растяжку! \n 02/10/24", "isCompleted": false ],
-        ["taskName": " Уборка в квартире \n Провести генеральную уборку в квартире \n 05/10/24", "isCompleted": false ],
-        ["taskName": "Вечерний отдых  \n Найти время для расслабления перед сном: посмотреть фильм или послушать музыку \n 10/10/24", "isCompleted": false ]
-    ]
+    var task = CoreDataManager.shared.fetchTasks()
     
     func addTask(taskName: String, isCompleted: Bool = false) {
-        task.append(["taskName": taskName, "isCompleted": false])
-        print("cvbjnk")
+        CoreDataManager.shared.addTask(taskName: taskName, isCompleted: isCompleted)
+        task = CoreDataManager.shared.fetchTasks()
         
     }
     
     func removeTask(at index: Int) {
+        let taskToRemove = task[index]
+        CoreDataManager.shared.deleteTask(task: taskToRemove)
         task.remove(at: index)
-    }
-    
-    func saveData() {
     }
 }

@@ -194,12 +194,19 @@ extension ToDoViewController: UITableViewDataSource {
         }
         
         let task = viewModel.task[indexPath.row]
-        cell.configure(with: task,at: indexPath)
+        cell.configure(with: task, at: indexPath)
         
         // Уведомляем об изменении состояния задачи
         cell.onTaskCompletionChanged = { [weak self] indexPath, isCompleted in
-            self?.viewModel.task[indexPath.row]["isCompleted"] = isCompleted
+            guard let self = self else { return }
+            
+            // Обновляем состояние задачи в Core Data
+            let taskToUpdate = self.viewModel.task[indexPath.row]
+            taskToUpdate.isCompleted = isCompleted
+            CoreDataManager.shared.saveContext()
+            
             print("Task updated at index \(indexPath.row), isCompleted: \(isCompleted)")
+            self.tableView.reloadRows(at: [indexPath], with: .automatic)
         }
         
         return cell
@@ -215,6 +222,8 @@ extension ToDoViewController: UITableViewDelegate {
 extension ToDoViewController: TaskCreationDelegate {
     func didCreateTask(task: String) {
         viewModel.addTask(taskName: task)
-        tableView.reloadData()
+        let newIndexPath = IndexPath(row: viewModel.task.count - 1, section: 0)
+        tableView.insertRows(at: [newIndexPath], with: .automatic)
+        taskLable.text = "\(viewModel.task.count) задач"
     }
 }
