@@ -9,10 +9,14 @@ import UIKit
 
 protocol TaskCreationDelegate: AnyObject {
     func didCreateTask(task: String)
+    func didUpdateTask(at index: Int, with newName: String)
 }
 
 final class TaskViewController: UIViewController {
     weak var delegate: TaskCreationDelegate?
+    
+    var taskText: String? // Для хранения текста редактируемой задачи
+    var index: Int?
     
     lazy var taskView: UITextView = {
         let textView = UITextView()
@@ -23,7 +27,7 @@ final class TaskViewController: UIViewController {
         textView.isEditable = true
         textView.isScrollEnabled = true
         textView.translatesAutoresizingMaskIntoConstraints = false
-        textView.delegate = self               
+        textView.delegate = self
         return textView    }()
     
     override func viewDidLoad() {
@@ -32,6 +36,10 @@ final class TaskViewController: UIViewController {
         view.backgroundColor = .customBlack
         setupCustomBackButton()
         configureView()
+        
+        if let taskText = taskText {
+            taskView.text = taskText // Устанавливаем текст для редактирования
+        }
         
     }
     
@@ -56,10 +64,23 @@ final class TaskViewController: UIViewController {
     
     @objc
     private func backButtonTapped() {
-        delegate?.didCreateTask(task: taskView.text)
-        navigationController?.popViewController(animated: true)
+        let trimmedText = taskView.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        
+        switch (trimmedText.isEmpty, index) {
+        case (true, _): // Если текст пустой, просто закрыть экран
+            navigationController?.popViewController(animated: true)
+            
+        case (false, let index?): // Обновление существующей задачи
+            delegate?.didUpdateTask(at: index, with: trimmedText)
+            navigationController?.popViewController(animated: true)
+            
+        case (false, nil): // Создание новой задачи
+            delegate?.didCreateTask(task: trimmedText)
+            navigationController?.popViewController(animated: true)
+        }
     }
 }
+
 
 extension TaskViewController: ViewConfigurable {
     func addSubviews() {

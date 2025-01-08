@@ -36,6 +36,17 @@ final class ToDoViewController: UIViewController {
         return tableView
     }()
     
+    private lazy var placeholderLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Ничего не найдено"
+        label.textColor = .customWhite
+        label.textAlignment = .center
+        label.font = .sfProText(.bold, size: 20)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.isHidden = true // По умолчанию скрыт
+        return label
+    }()
+    
     // MARK: - Private Priorites
     private let searchController = UISearchController(searchResultsController: nil)
     private var toolBar: UIToolbar = {
@@ -45,6 +56,7 @@ final class ToDoViewController: UIViewController {
     }()
     
     private let viewModel = TaskViewModel()
+    private var filteredTasks: [Task] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -141,7 +153,7 @@ final class ToDoViewController: UIViewController {
 
 extension ToDoViewController: ViewConfigurable {
     func addSubviews() {
-        [tableView, toolBar].forEach {
+        [tableView, toolBar, placeholderLabel].forEach {
             view.addSubview($0)
         }
     }
@@ -156,7 +168,10 @@ extension ToDoViewController: ViewConfigurable {
             toolBar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             toolBar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             toolBar.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
-            toolBar.heightAnchor.constraint(equalToConstant: 49)
+            toolBar.heightAnchor.constraint(equalToConstant: 49),
+            
+            placeholderLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+                    placeholderLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor)
         ])
     }
 }
@@ -165,7 +180,19 @@ extension ToDoViewController: ViewConfigurable {
 //MARK: - SearchController
 extension ToDoViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
-        guard searchController.searchBar.text != nil else { return }
+        guard let query = searchController.searchBar.text?.trimmingCharacters(in: .whitespacesAndNewlines), !query.isEmpty else {
+                    filteredTasks = []
+                    tableView.reloadData()
+                    return
+                }
+
+                // Фильтруем задачи
+                filteredTasks = viewModel.task.filter { task in
+                    guard let taskName = task.taskName else { return false }
+                    return taskName.lowercased().hasPrefix(query.lowercased())
+                }
+
+                tableView.reloadData()
         
         
     }
@@ -175,6 +202,8 @@ extension ToDoViewController: UISearchResultsUpdating {
 extension ToDoViewController: UISearchBarDelegate {
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         searchController.searchBar.text = ""
+            filteredTasks = []
+            tableView.reloadData()
     }
 }
 
@@ -182,9 +211,11 @@ extension ToDoViewController: UISearchBarDelegate {
 
 extension ToDoViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        viewModel.task.count
+        let count = searchController.isActive ? filteredTasks.count : viewModel.task.count
+        placeholderLabel.isHidden = count > 0 // Скрываем плейсхолдер, если есть задачи
+        return count
     }
-    
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(
             withIdentifier: ToDoTableViewCell.identifier,
@@ -192,30 +223,46 @@ extension ToDoViewController: UITableViewDataSource {
         ) as? ToDoTableViewCell else {
             return UITableViewCell()
         }
-        
-        let task = viewModel.task[indexPath.row]
+
+        let task = searchController.isActive ? filteredTasks[indexPath.row] : viewModel.task[indexPath.row]
         cell.configure(with: task, at: indexPath)
-        
-        // Уведомляем об изменении состояния задачи
+
         cell.onTaskCompletionChanged = { [weak self] indexPath, isCompleted in
             guard let self = self else { return }
-            
-            // Обновляем состояние задачи в Core Data
-            let taskToUpdate = self.viewModel.task[indexPath.row]
+
+            let taskToUpdate = self.searchController.isActive ? self.filteredTasks[indexPath.row] : self.viewModel.task[indexPath.row]
             taskToUpdate.isCompleted = isCompleted
             CoreDataManager.shared.saveContext()
-            
-            print("Task updated at index \(indexPath.row), isCompleted: \(isCompleted)")
+
             self.tableView.reloadRows(at: [indexPath], with: .automatic)
         }
-        
+
         return cell
+    }
+
+    
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            viewModel.removeTask(at: indexPath.row)
+            tableView.deleteRows(at: [indexPath], with: .fade)
+            taskLable.text = "\(viewModel.task.count) задач"
+        }
     }
 }
 
 extension ToDoViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+        editTask(at: indexPath)
+    }
+    
+    func editTask(at indexPath: IndexPath) {
+        let task = viewModel.task[indexPath.row]
+        let taskViewController = TaskViewController()
+        taskViewController.delegate = self
+        taskViewController.taskText = task.taskName // Передаем текст задачи
+        taskViewController.index = indexPath.row // Передаем индекс задачи
+        navigationController?.pushViewController(taskViewController, animated: true)
     }
 }
 
@@ -225,5 +272,10 @@ extension ToDoViewController: TaskCreationDelegate {
         let newIndexPath = IndexPath(row: viewModel.task.count - 1, section: 0)
         tableView.insertRows(at: [newIndexPath], with: .automatic)
         taskLable.text = "\(viewModel.task.count) задач"
+    }
+    
+    func didUpdateTask(at index: Int, with newName: String) {
+        viewModel.updateTask(at: index, with: newName)
+        tableView.reloadData()
     }
 }

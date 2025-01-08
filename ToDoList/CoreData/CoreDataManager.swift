@@ -62,4 +62,9 @@ extension CoreDataManager {
         context.delete(task)
         saveContext()
     }
+    
+    func updateTask(task: Task, with newName: String) {
+        task.taskName = newName
+        saveContext()
+    }
 }

@@ -21,4 +21,10 @@ final class TaskViewModel {
         CoreDataManager.shared.deleteTask(task: taskToRemove)
         task.remove(at: index)
     }
+    
+    func updateTask(at index: Int, with newName: String) {
+        let taskToUpdate = task[index]
+        CoreDataManager.shared.updateTask(task: taskToUpdate, with: newName)
+        task = CoreDataManager.shared.fetchTasks() // Обновляем массив задач
+    }
 }
