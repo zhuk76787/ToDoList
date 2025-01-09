@@ -30,19 +30,20 @@ final class TaskViewController: UIViewController {
         textView.delegate = self
         return textView    }()
     
+    // MARK: - LifeCycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationItem.largeTitleDisplayMode = .never // Отключаем большой заголовок
+        navigationItem.largeTitleDisplayMode = .never
         view.backgroundColor = .customBlack
         setupCustomBackButton()
         configureView()
         
         if let taskText = taskText {
-            taskView.text = taskText // Устанавливаем текст для редактирования
+            taskView.text = taskText
         }
-        
     }
     
+    // MARK: - Private Metods
     private func setupCustomBackButton() {
         var backBattonConfig = UIButton.Configuration.plain()
         backBattonConfig.title = "Назад"
@@ -81,7 +82,7 @@ final class TaskViewController: UIViewController {
     }
 }
 
-
+// MARK: - Configuration View
 extension TaskViewController: ViewConfigurable {
     func addSubviews() {
         view.addSubview(taskView)
@@ -99,8 +100,8 @@ extension TaskViewController: ViewConfigurable {
     
 }
 
+// MARK: - UITextViewDelegate
 extension TaskViewController: UITextViewDelegate {
-    
     func textViewDidChange(_ textView: UITextView) {
         // Обновление текста при редактировании
         formatTextView(textView)

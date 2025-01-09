@@ -58,6 +58,8 @@ final class ToDoViewController: UIViewController {
     private let viewModel = TaskViewModel()
     private var filteredTasks: [Task] = []
     
+    
+    // MARK: - LifeCycle
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .customBlack
@@ -151,6 +153,7 @@ final class ToDoViewController: UIViewController {
     }
 }
 
+// MARK: - Configuration View
 extension ToDoViewController: ViewConfigurable {
     func addSubviews() {
         [tableView, toolBar, placeholderLabel].forEach {
@@ -185,16 +188,12 @@ extension ToDoViewController: UISearchResultsUpdating {
                     tableView.reloadData()
                     return
                 }
-
                 // Фильтруем задачи
                 filteredTasks = viewModel.task.filter { task in
                     guard let taskName = task.taskName else { return false }
                     return taskName.lowercased().hasPrefix(query.lowercased())
                 }
-
                 tableView.reloadData()
-        
-        
     }
 }
 
@@ -208,11 +207,10 @@ extension ToDoViewController: UISearchBarDelegate {
 }
 
 // MARK: - UITableViewDataSource
-
 extension ToDoViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let count = searchController.isActive ? filteredTasks.count : viewModel.task.count
-        placeholderLabel.isHidden = count > 0 // Скрываем плейсхолдер, если есть задачи
+        placeholderLabel.isHidden = count > 0 || !searchController.isActive// Скрываем плейсхолдер, если есть задачи
         return count
     }
 
@@ -250,6 +248,7 @@ extension ToDoViewController: UITableViewDataSource {
     }
 }
 
+// MARK: - UITableViewDelegate
 extension ToDoViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
@@ -266,6 +265,7 @@ extension ToDoViewController: UITableViewDelegate {
     }
 }
 
+// MARK: - Delegate for TaskViewController
 extension ToDoViewController: TaskCreationDelegate {
     func didCreateTask(task: String) {
         viewModel.addTask(taskName: task)

@@ -11,9 +11,7 @@ final class ToDoTableViewCell: UITableViewCell {
     // MARK: - Public Properties
     static let identifier = "ToDoCell"
     
-    // Замыкание для уведомления об изменении состояния задачи
     var onTaskCompletionChanged: ((IndexPath, Bool) -> Void)?
-    
     
     // MARK: - UI Elements
     private lazy var checkButton: UIButton = {
@@ -22,7 +20,6 @@ final class ToDoTableViewCell: UITableViewCell {
         button.tintColor = .stroke
         button.addTarget(self, action: #selector(didTapCheckButton), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
-        
         return button
     }()
     
@@ -51,12 +48,12 @@ final class ToDoTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    // MARK: - Configuration
+    // MARK: - Method Configuration Cell
     func configure(with task: Task, at indexPath: IndexPath) {
-        self.taskName = task.taskName // Сохраняем текст задачи
-        self.isTaskCompleted = task.isCompleted // Берем статус выполнения
+        self.taskName = task.taskName
+        self.isTaskCompleted = task.isCompleted
         
-        updateUIForCompletionState() // Обновляем интерфейс
+        updateUIForCompletionState()
         self.indexPath = indexPath
     }
     
@@ -104,14 +101,13 @@ final class ToDoTableViewCell: UITableViewCell {
         isTaskCompleted.toggle()
         updateUIForCompletionState()
         
-        // Уведомляем об изменении состояния задачи
         if let indexPath = indexPath {
             onTaskCompletionChanged?(indexPath, isTaskCompleted)
         }
     }
 }
 
-// MARK: - ViewConfigurable
+// MARK: - Configuration View
 extension ToDoTableViewCell: ViewConfigurable {
     func addSubviews() {
         contentView.addSubview(checkButton)
