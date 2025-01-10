@@ -9,9 +9,6 @@ import UIKit
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
-
-
-
     func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [
@@ -20,9 +17,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     ) -> Bool {
         return true
     }
-
     // MARK: UISceneSession Lifecycle
-
+    
     func application(
         _ application: UIApplication,
         configurationForConnecting connectingSceneSession: UISceneSession,
@@ -33,7 +29,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             sessionRole: connectingSceneSession.role
         )
     }
-
+    
     func application(
         _ application: UIApplication,
         didDiscardSceneSessions sceneSessions: Set<UISceneSession>
