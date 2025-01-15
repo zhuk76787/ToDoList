@@ -66,6 +66,16 @@ final class ToDoViewController: UIViewController {
         configureView()
         setupNavigationBar()
         setupToolBar()
+        
+        viewModel.syncTasksFromAPI { [weak self] error in
+               if let error = error {
+                   print("Failed to sync tasks: \(error)")
+               } else {
+                   DispatchQueue.main.async {
+                       self?.tableView.reloadData()
+                   }
+               }
+           }
     }
     
     // MARK: - Private Methods

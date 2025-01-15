@@ -27,4 +27,25 @@ final class TaskViewModel {
         CoreDataManager.shared.updateTask(task: taskToUpdate, with: newName)
         task = CoreDataManager.shared.fetchTasks() // Обновляем массив задач
     }
+    
+    func syncTasksFromAPI(completion: @escaping (Error?) -> Void) {
+            TaskService().fetchTodos { result in
+                switch result {
+                case .success(let tasks):
+                    DispatchQueue.global(qos: .background).async {
+                        for taskModel in tasks {
+                            if !CoreDataManager.shared.isTaskExists(withID: Int64(taskModel.id)) {
+                                CoreDataManager.shared.addTaskFromAPI(taskModel: taskModel)
+                            }
+                        }
+                        self.task = CoreDataManager.shared.fetchTasks()
+                        DispatchQueue.main.async {
+                            completion(nil)
+                        }
+                    }
+                case .failure(let error):
+                    completion(error)
+                }
+            }
+        }
 }
