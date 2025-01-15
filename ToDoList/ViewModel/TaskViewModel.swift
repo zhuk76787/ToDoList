@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 final class TaskViewModel {
     var task = CoreDataManager.shared.fetchTasks()

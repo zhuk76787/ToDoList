@@ -15,7 +15,7 @@ protocol TaskCreationDelegate: AnyObject {
 final class TaskViewController: UIViewController {
     weak var delegate: TaskCreationDelegate?
     
-    var taskText: String? // Для хранения текста редактируемой задачи
+    var taskText: String? 
     var index: Int?
     
     lazy var taskView: UITextView = {
