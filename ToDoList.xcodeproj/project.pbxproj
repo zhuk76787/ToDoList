@@ -20,6 +20,7 @@
 		477C2B4B2CED18400085CDED /* SF-Pro-Text-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = 477C2B452CED14010085CDED /* SF-Pro-Text-Medium.otf */; };
 		477C2B4C2CED184B0085CDED /* SF-Pro-Text-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 477C2B432CED13F10085CDED /* SF-Pro-Text-Bold.otf */; };
 		477E78332D300FA30027314C /* PlaceHolder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 477E78322D300FA30027314C /* PlaceHolder.swift */; };
+		47B5DC032D3661A9002BF445 /* TaskService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47B5DC022D3661A9002BF445 /* TaskService.swift */; };
 		47C7E6FF2D286CEA009E6C8E /* ToDoTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47C7E6FE2D286CEA009E6C8E /* ToDoTableViewCell.swift */; };
 		47C7E7022D294963009E6C8E /* TaskModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47C7E7012D294963009E6C8E /* TaskModel.swift */; };
 		47C7E7052D294D1E009E6C8E /* TaskViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47C7E7042D294D1E009E6C8E /* TaskViewModel.swift */; };
@@ -44,6 +45,7 @@
 		477C2B472CED14110085CDED /* SF-Pro-Text-Regular.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "SF-Pro-Text-Regular.otf"; sourceTree = "<group>"; };
 		477C2B492CED15400085CDED /* ExtentionUIFont.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtentionUIFont.swift; sourceTree = "<group>"; };
 		477E78322D300FA30027314C /* PlaceHolder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceHolder.swift; sourceTree = "<group>"; };
+		47B5DC022D3661A9002BF445 /* TaskService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskService.swift; sourceTree = "<group>"; };
 		47C7E6FE2D286CEA009E6C8E /* ToDoTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToDoTableViewCell.swift; sourceTree = "<group>"; };
 		47C7E7012D294963009E6C8E /* TaskModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskModel.swift; sourceTree = "<group>"; };
 		47C7E7042D294D1E009E6C8E /* TaskViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskViewModel.swift; sourceTree = "<group>"; };
@@ -83,6 +85,7 @@
 		4702A6452CEBCC7100E81CBC /* ToDoList */ = {
 			isa = PBXGroup;
 			children = (
+				47B5DBFF2D36615A002BF445 /* Service */,
 				47EBEAE82D2DC47500415FED /* CoreData */,
 				47C7E7032D294CFC009E6C8E /* ViewModel */,
 				47C7E7002D29472F009E6C8E /* Model */,
@@ -128,6 +131,14 @@
 				477C2B472CED14110085CDED /* SF-Pro-Text-Regular.otf */,
 			);
 			path = Fonts;
+			sourceTree = "<group>";
+		};
+		47B5DBFF2D36615A002BF445 /* Service */ = {
+			isa = PBXGroup;
+			children = (
+				47B5DC022D3661A9002BF445 /* TaskService.swift */,
+			);
+			path = Service;
 			sourceTree = "<group>";
 		};
 		47C7E7002D29472F009E6C8E /* Model */ = {
@@ -231,6 +242,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				47B5DC032D3661A9002BF445 /* TaskService.swift in Sources */,
 				47C7E7052D294D1E009E6C8E /* TaskViewModel.swift in Sources */,
 				477E78332D300FA30027314C /* PlaceHolder.swift in Sources */,
 				4702A6462CEBCC7100E81CBC /* AppDelegate.swift in Sources */,

@@ -68,3 +68,26 @@ extension CoreDataManager {
         saveContext()
     }
 }
+
+extension CoreDataManager {
+    func isTaskExists(withID id: Int64) -> Bool {
+        let fetchRequest: NSFetchRequest<Task> = Task.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "id == %d", id)
+        
+        do {
+            let count = try context.count(for: fetchRequest)
+            return count > 0
+        } catch {
+            print("Failed to check task existence: \(error)")
+            return false
+        }
+    }
+    
+    func addTaskFromAPI(taskModel: TaskModel) {
+        let task = Task(context: context)
+        task.id = Int64(taskModel.id)
+        task.taskName = taskModel.todo
+        task.isCompleted = taskModel.isCompleted
+        saveContext()
+    }
+}

@@ -63,7 +63,6 @@ final class ToDoTableViewCell: UITableViewCell {
         checkButton.setImage(UIImage(systemName: buttonImage), for: .normal)
         checkButton.tintColor = isTaskCompleted ? .customYellow : .stroke
         
-        // Разделяем текст и создаем атрибутированный текст
         guard let taskName = taskName else { return }
         let components = taskName.components(separatedBy: "\n")
         let title = components.first ?? ""
@@ -84,8 +83,6 @@ final class ToDoTableViewCell: UITableViewCell {
                 .foregroundColor: isTaskCompleted ? UIColor.stroke : UIColor.stroke
             ]
         ))
-        
-        // Добавляем зачеркнутый стиль, если задача завершена
         if isTaskCompleted {
             attributedText.addAttributes(
                 [.strikethroughStyle: NSUnderlineStyle.single.rawValue],
