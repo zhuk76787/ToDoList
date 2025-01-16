@@ -8,7 +8,7 @@
 import CoreData
 import Foundation
 
-final class CoreDataManager {
+ class CoreDataManager {
     //MARK: - Public Priorites
     static let shared = CoreDataManager()
     

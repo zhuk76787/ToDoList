@@ -71,6 +71,7 @@ final class ToDoViewController: UIViewController {
     
     // MARK: - Private Methods
     private func setupNavigationBar() {
+        navigationController?.navigationBar.barStyle = .black
         navigationItem.title = "Задачи"
         navigationController?.navigationBar.largeTitleTextAttributes = [
             .foregroundColor: UIColor.customWhite,
@@ -100,6 +101,7 @@ final class ToDoViewController: UIViewController {
     }
     
     private func setupToolBar() {
+        toolBar.barStyle = .black
         toolBar.backgroundColor = .customGray
         toolBar.translatesAutoresizingMaskIntoConstraints = false
         let containerView = UIView()

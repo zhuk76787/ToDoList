@@ -39,7 +39,7 @@ final class ToDoTableViewCell: UITableViewCell {
     // MARK: - Initializers
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        backgroundColor = .black
+        backgroundColor = .customBlack
         separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         configureView()
     }
