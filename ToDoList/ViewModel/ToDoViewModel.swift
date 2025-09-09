@@ -1,5 +1,5 @@
 //
-//  ToDoViewModel.swift
+//  TaskViewModel.swift
 //  ToDoList
 //
 //  Created by Дмитрий Жуков on 1/4/25.
@@ -30,8 +30,8 @@ final class ToDoViewModel {
     
     // MARK: - Public MEthods
     
-    func addTask(taskName: String, isCompleted: Bool = false) {
-        CoreDataManager.shared.addTask(taskName: taskName, isCompleted: isCompleted)
+    func addTask(taskName: String, isCompleted: Bool = false, creationDate: Date = Date()) {
+        CoreDataManager.shared.addTask(taskName: taskName, isCompleted: isCompleted, creationDate: creationDate)
         loadTasks()
     }
     
@@ -41,9 +41,9 @@ final class ToDoViewModel {
         loadTasks()
     }
     
-    func updateTask(at index: Int, with newName: String) {
+    func updateTask(at index: Int, with newName: String, newDate: Date = Date()) {
         let taskToUpdate = tasks[index]
-        CoreDataManager.shared.updateTask(task: taskToUpdate, with: newName)
+        CoreDataManager.shared.updateTask(task: taskToUpdate, with: newName, newDate: newDate)
         loadTasks()
     }
     
@@ -52,7 +52,7 @@ final class ToDoViewModel {
     }
     
     func syncTasksFromAPI() -> AnyPublisher<Result<Void, Error>, Never> {
-        return Future<Result<Void, Error>, Never> { promise in
+        return Future<Result<Void, Error>, Never> { [weak self] promise in
             TaskService().fetchTodos { result in
                 switch result {
                 case .success(let apiTasks):
@@ -62,10 +62,11 @@ final class ToDoViewModel {
                                 CoreDataManager.shared.addTaskFromAPI(taskModel: taskModel)
                             }
                         }
-                        self.loadTasks()
+                        self?.loadTasks()
                         promise(.success(.success(())))
                     }
                 case .failure(let error):
+                    print("Failed to sync tasks: \(error)")
                     promise(.success(.failure(error)))
                 }
             }

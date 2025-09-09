@@ -11,7 +11,7 @@ import Combine
 final class ToDoViewController: UIViewController {
     
     // MARK: - UI Element
-    private lazy var taskLable: UILabel = {
+    private lazy var taskLabel: UILabel = {
         let label = UILabel()
         label.font = .sfProText(.regular, size: 11)
         label.textAlignment = .center
@@ -32,7 +32,6 @@ final class ToDoViewController: UIViewController {
         )
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 106
-        tableView.reloadData()
         return tableView
     }()
     
@@ -104,13 +103,13 @@ final class ToDoViewController: UIViewController {
     
     private func setupToolBar() {
         let containerView = UIView()
-        containerView.addSubview(taskLable)
+        containerView.addSubview(taskLabel)
         NSLayoutConstraint.activate([
-            taskLable.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
-            taskLable.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
-            taskLable.topAnchor.constraint(equalTo: containerView.topAnchor),
-            taskLable.bottomAnchor.constraint(equalTo: containerView.bottomAnchor),
-            taskLable.heightAnchor.constraint(equalToConstant: 13)
+            taskLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
+            taskLabel.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
+            taskLabel.topAnchor.constraint(equalTo: containerView.topAnchor),
+            taskLabel.bottomAnchor.constraint(equalTo: containerView.bottomAnchor),
+            taskLabel.heightAnchor.constraint(equalToConstant: 13)
         ])
         containerView.widthAnchor.constraint(equalToConstant: 150).isActive = true
         
@@ -134,7 +133,7 @@ final class ToDoViewController: UIViewController {
         viewModel.$tasksCountText
             .receive(on: RunLoop.main)
             .sink { [weak self] text in
-                self?.taskLable.text = text
+                self?.taskLabel.text = text
             }
             .store(in: &cancellables)
         
@@ -183,6 +182,7 @@ final class ToDoViewController: UIViewController {
             let taskViewController = TaskViewController()
             taskViewController.taskText = task.taskName
             taskViewController.index = index
+            taskViewController.originalDate = task.creationDate
             subscribeToTaskEvents(from: taskViewController)
             navigationController?.pushViewController(taskViewController, animated: true)
         }
@@ -195,10 +195,10 @@ final class ToDoViewController: UIViewController {
                 guard let self = self else { return }
                 
                 switch event {
-                case .create(let text):
-                    self.viewModel.addTask(taskName: text)
-                case .update(let index, let text):
-                    self.viewModel.updateTask(at: index, with: text)
+                case .create(let text, let date):
+                    self.viewModel.addTask(taskName: text, creationDate: date)
+                case .update(let index, let text, let date):
+                    self.viewModel.updateTask(at: index, with: text, newDate: date)
                 }
             }
             .store(in: &cancellables)

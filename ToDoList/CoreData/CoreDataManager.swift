@@ -41,10 +41,11 @@ import Foundation
 
 // MARK: - Methods Add, Fetch and Del
 extension CoreDataManager {
-    func addTask(taskName: String, isCompleted: Bool) {
+    func addTask(taskName: String, isCompleted: Bool, creationDate: Date) {
         let task = Task(context: context)
         task.taskName = taskName
         task.isCompleted = isCompleted
+        task.creationDate = creationDate
         saveContext()
     }
     
@@ -63,8 +64,9 @@ extension CoreDataManager {
         saveContext()
     }
     
-    func updateTask(task: Task, with newName: String) {
+    func updateTask(task: Task, with newName: String, newDate: Date) {
         task.taskName = newName
+        task.creationDate = newDate
         saveContext()
     }
 }

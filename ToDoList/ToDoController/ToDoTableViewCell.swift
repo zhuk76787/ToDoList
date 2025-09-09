@@ -35,6 +35,7 @@ final class ToDoTableViewCell: UITableViewCell {
     private var isTaskCompleted: Bool = false
     private var indexPath: IndexPath?
     private var taskName: String?
+    private var creationDate: Date?
     
     // MARK: - Initializers
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -58,6 +59,7 @@ final class ToDoTableViewCell: UITableViewCell {
     func configure(with task: Task, at indexPath: IndexPath) {
         self.taskName = task.taskName
         self.isTaskCompleted = task.isCompleted
+        self.creationDate = task.creationDate
         
         updateUIForCompletionState()
         self.indexPath = indexPath
@@ -65,18 +67,22 @@ final class ToDoTableViewCell: UITableViewCell {
     
     func setHighlightedBackground(_ highlighted: Bool) {
         UIView.animate(withDuration: 0.2,delay: 0,options: .curveEaseInOut) {
-            self.contentView.backgroundColor = highlighted ? .customBlack : .customGray
+            self.contentView.backgroundColor = highlighted ? .customGray : .customBlack
         }
     }
     
-    // MARK: - UI Updates
+    // MARK: - UI Updates    
     private func updateUIForCompletionState() {
         let buttonImage = isTaskCompleted ? "checkCircle" : "circle"
         checkButton.setImage(UIImage(named: buttonImage), for: .normal)
         checkButton.tintColor = isTaskCompleted ? .customYellow : .stroke
         
         guard let taskName = taskName else { return }
-        taskLabel.attributedText = TextFormatterService.shared.formatTaskText(taskName, isCompleted: isTaskCompleted)
+        taskLabel.attributedText = TextFormatterService.shared.formatTaskText(
+            taskName,
+            creationDate: creationDate,
+            isCompleted: isTaskCompleted
+        )
     }
         
     // MARK: - Actions

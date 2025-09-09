@@ -57,6 +57,6 @@ final class TaskViewModel: ObservableObject {
     }
     
     private func formatTextWithDates(_ text: String) -> NSAttributedString {
-        return TextFormatterService.shared.formatTaskText(text)
+        return TextFormatterService.shared.formatTaskText(text, creationDate: Date())
     }
 }

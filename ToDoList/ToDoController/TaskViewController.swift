@@ -9,8 +9,8 @@ import UIKit
 import Combine
 
 enum TaskEvent {
-    case create(text: String)
-    case update(index: Int, text: String)
+    case create(text: String, date: Date)
+    case update(index: Int, text: String, date: Date)
 }
 
 final class TaskViewController: UIViewController {
@@ -22,6 +22,7 @@ final class TaskViewController: UIViewController {
     
     var taskText: String?
     var index: Int?
+    var originalDate: Date?
     
     private lazy var taskView: UITextView = {
         let textView = UITextView()
@@ -153,9 +154,9 @@ final class TaskViewController: UIViewController {
             return
         }
         if let index = index {
-            taskEventPublisher.send(.update(index: index, text: trimmedText))
+            taskEventPublisher.send(.update(index: index, text: trimmedText, date: originalDate ?? Date()))
         } else {
-            taskEventPublisher.send(.create(text: trimmedText))
+            taskEventPublisher.send(.create(text: trimmedText, date: Date()))
         }
         taskEventPublisher.send(completion: .finished)
         navigationController?.popViewController(animated: true)
