@@ -75,22 +75,40 @@ final class ToDoTableViewCell: UITableViewCell {
                 .foregroundColor: isTaskCompleted ? UIColor.stroke : UIColor.customWhite
             ]
         )
-        
-        attributedText.append(NSAttributedString(
-            string: descriptionAndDate,
-            attributes: [
-                .font: UIFont.systemFont(ofSize: 14),
-                .foregroundColor: isTaskCompleted ? UIColor.stroke : UIColor.stroke
-            ]
-        ))
+        if !descriptionAndDate.isEmpty {
+            let formattedDescription = formatDescriptionText(descriptionAndDate, isCompleted: isTaskCompleted)
+            attributedText.append(formattedDescription)
+        }
         if isTaskCompleted {
             attributedText.addAttributes(
                 [.strikethroughStyle: NSUnderlineStyle.single.rawValue],
                 range: NSRange(location: 0, length: attributedText.length)
             )
         }
-        
         taskLabel.attributedText = attributedText
+    }
+    
+    private func formatDescriptionText(_ text: String, isCompleted: Bool) -> NSAttributedString {
+        let attributedString = NSMutableAttributedString(string: text)
+        
+        let baseAttributes: [NSAttributedString.Key: Any] = [
+            .font: UIFont.systemFont(ofSize: 14),
+            .foregroundColor: isCompleted ? UIColor.stroke : UIColor.customWhite
+        ]
+        attributedString.addAttributes(baseAttributes, range: NSRange(location: 0, length: text.count))
+        
+        if !isCompleted {
+            if let regex = try? NSRegularExpression(pattern: "\\b\\d{2}\\.\\d{2}\\.\\d{4}\\b") {
+                let matches = regex.matches(in: text, range: NSRange(location: 0, length: text.utf16.count))
+                
+                for match in matches {
+                    attributedString.addAttributes([
+                        .foregroundColor: UIColor.stroke
+                    ], range: match.range)
+                }
+            }
+        }
+        return attributedString
     }
     
     // MARK: - Actions
