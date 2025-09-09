@@ -171,12 +171,37 @@ final class ToDoViewController: UIViewController {
             .store(in: &cancellables)
     }
     
-    
-    
     @objc private func addTask() {
         let taskViewController = TaskViewController()
-        taskViewController.delegate = self
+        subscribeToTaskEvents(from: taskViewController)
         navigationController?.pushViewController(taskViewController, animated: true)
+    }
+    
+    private func editTask(at indexPath: IndexPath) {
+        let task = viewModel.filteredTasks[indexPath.row]
+        if let index = viewModel.tasks.firstIndex(where: { $0 == task }) {
+            let taskViewController = TaskViewController()
+            taskViewController.taskText = task.taskName
+            taskViewController.index = index
+            subscribeToTaskEvents(from: taskViewController)
+            navigationController?.pushViewController(taskViewController, animated: true)
+        }
+    }
+    
+    private func subscribeToTaskEvents(from taskViewController: TaskViewController) {
+        taskViewController.taskEventPublisher
+            .receive(on: RunLoop.main)
+            .sink { [weak self] event in
+                guard let self = self else { return }
+                
+                switch event {
+                case .create(let text):
+                    self.viewModel.addTask(taskName: text)
+                case .update(let index, let text):
+                    self.viewModel.updateTask(at: index, with: text)
+                }
+            }
+            .store(in: &cancellables)
     }
     
     private func shareTask(at indexPath: IndexPath) {
@@ -257,7 +282,6 @@ extension ToDoViewController: UITableViewDataSource {
         return cell
     }
     
-    
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             if searchController.isActive {
@@ -275,43 +299,18 @@ extension ToDoViewController: UITableViewDataSource {
 // MARK: - UITableViewDelegate
 extension ToDoViewController: UITableViewDelegate {
     
-    private func editTask(at indexPath: IndexPath) {
-        let task = viewModel.filteredTasks[indexPath.row]
-        if let index = viewModel.tasks.firstIndex(where: { $0 == task }) {
-            let taskViewController = TaskViewController()
-            taskViewController.delegate = self
-            taskViewController.taskText = task.taskName
-            taskViewController.index = index
-            navigationController?.pushViewController(taskViewController, animated: true)
-        }
-    }
-    
     func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
         return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
             let editAction = UIAction(title: "Редактировать", image: UIImage(systemName: "square.and.pencil")) { _ in
                 self.editTask(at: indexPath)
             }
-            
             let shareAction = UIAction(title: "Поделиться", image: UIImage(systemName: "square.and.arrow.up")) { _ in
                 self.shareTask(at: indexPath)
             }
-            
             let deleteAction = UIAction(title: "Удалить", image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
                 self.tableView(tableView, commit: .delete, forRowAt: indexPath)
             }
-            
             return UIMenu(title: "", children: [editAction, shareAction, deleteAction])
         }
-    }
-}
-
-// MARK: - TaskCreationDelegate
-extension ToDoViewController: TaskCreationDelegate {
-    func didCreateTask(task: String) {
-        viewModel.addTask(taskName: task)
-    }
-    
-    func didUpdateTask(at index: Int, with newName: String) {
-        viewModel.updateTask(at: index, with: newName)
     }
 }

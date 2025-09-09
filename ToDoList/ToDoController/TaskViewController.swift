@@ -8,13 +8,13 @@
 import UIKit
 import Combine
 
-protocol TaskCreationDelegate: AnyObject {
-    func didCreateTask(task: String)
-    func didUpdateTask(at index: Int, with newName: String)
+enum TaskEvent {
+    case create(text: String)
+    case update(index: Int, text: String)
 }
 
 final class TaskViewController: UIViewController {
-    weak var delegate: TaskCreationDelegate?
+    let taskEventPublisher = PassthroughSubject<TaskEvent, Never>()
     
     private let viewModel = TaskViewModel()
     private var cancellables = Set<AnyCancellable>()
@@ -148,18 +148,17 @@ final class TaskViewController: UIViewController {
         let fullText = viewModel.title + (viewModel.description.isEmpty ? "" : "\n" + viewModel.description)
         let trimmedText = fullText.trimmingCharacters(in: .whitespacesAndNewlines)
         
-        switch (trimmedText.isEmpty, index) {
-        case (true, _):
+        guard !trimmedText.isEmpty else {
             navigationController?.popViewController(animated: true)
-            
-        case (false, let index?):
-            delegate?.didUpdateTask(at: index, with: trimmedText)
-            navigationController?.popViewController(animated: true)
-            
-        case (false, nil):
-            delegate?.didCreateTask(task: trimmedText)
-            navigationController?.popViewController(animated: true)
+            return
         }
+        if let index = index {
+            taskEventPublisher.send(.update(index: index, text: trimmedText))
+        } else {
+            taskEventPublisher.send(.create(text: trimmedText))
+        }
+        taskEventPublisher.send(completion: .finished)
+        navigationController?.popViewController(animated: true)
     }
 }
 
@@ -187,7 +186,6 @@ extension TaskViewController: UITextViewDelegate {
     }
     
     func textViewDidBeginEditing(_ textView: UITextView) {
-        // Устанавливаем атрибуты для заголовка при начале редактирования
         let attributes: [NSAttributedString.Key: Any] = [
             .font: UIFont.sfProText(.bold, size: 34),
             .foregroundColor: UIColor.customWhite
