@@ -73,7 +73,7 @@ final class ToDoTableViewCell: UITableViewCell {
     
     // MARK: - UI Updates    
     private func updateUIForCompletionState() {
-        let buttonImage = isTaskCompleted ? "checkCircle" : "circle"
+        let buttonImage = isTaskCompleted ? "check" : "circle"
         checkButton.setImage(UIImage(named: buttonImage), for: .normal)
         checkButton.tintColor = isTaskCompleted ? .customYellow : .stroke
         
