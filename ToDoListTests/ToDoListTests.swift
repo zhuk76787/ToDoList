@@ -8,14 +8,12 @@
 
 import XCTest
 
-// Простая структура для задачи (замена Core Data Task)
 struct MockTask {
     var id: Int
     var taskName: String
     var isCompleted: Bool
 }
 
-// Мок для Core Data Manager
 class MockCoreDataManager {
     var tasks: [MockTask] = []
     var saveContextCalled = false
@@ -45,7 +43,6 @@ class MockCoreDataManager {
     }
 }
 
-// Unit-тесты
 class CoreDataManagerTests: XCTestCase {
     var mockManager: MockCoreDataManager!
 
