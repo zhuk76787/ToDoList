@@ -8,12 +8,20 @@
 
 import XCTest
 
+<<<<<<< HEAD
+
+=======
+>>>>>>> 30e0d5324b30b532488656e192de665a0db0d379
 struct MockTask {
     var id: Int
     var taskName: String
     var isCompleted: Bool
 }
 
+<<<<<<< HEAD
+
+=======
+>>>>>>> 30e0d5324b30b532488656e192de665a0db0d379
 class MockCoreDataManager {
     var tasks: [MockTask] = []
     var saveContextCalled = false
@@ -43,6 +51,10 @@ class MockCoreDataManager {
     }
 }
 
+<<<<<<< HEAD
+
+=======
+>>>>>>> 30e0d5324b30b532488656e192de665a0db0d379
 class CoreDataManagerTests: XCTestCase {
     var mockManager: MockCoreDataManager!
 
