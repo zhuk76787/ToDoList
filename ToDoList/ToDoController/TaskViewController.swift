@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Combine
 
 protocol TaskCreationDelegate: AnyObject {
     func didCreateTask(task: String)
@@ -15,10 +16,14 @@ protocol TaskCreationDelegate: AnyObject {
 final class TaskViewController: UIViewController {
     weak var delegate: TaskCreationDelegate?
     
-    var taskText: String? 
+    private let viewModel = TaskViewModel()
+    private var cancellables = Set<AnyCancellable>()
+    private var isTextViewUpdatingFromViewModel = false
+    
+    var taskText: String?
     var index: Int?
     
-    lazy var taskView: UITextView = {
+    private lazy var taskView: UITextView = {
         let textView = UITextView()
         textView.backgroundColor = .customBlack
         textView.font = .sfProText(.medium, size: 16)
@@ -28,54 +33,130 @@ final class TaskViewController: UIViewController {
         textView.isScrollEnabled = true
         textView.translatesAutoresizingMaskIntoConstraints = false
         textView.delegate = self
-        return textView    }()
+        textView.returnKeyType = .default
+        return textView
+    }()
     
     // MARK: - LifeCycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationItem.largeTitleDisplayMode = .never
-        view.backgroundColor = .customBlack
-        setupCustomBackButton()
-        configureView()
-        
-        if let taskText = taskText {
-            taskView.text = taskText
-        }
+        setupViewController()
+        setupNavigationBar()
+        setupInitialContent()
+        configureTextViewAppearance()
     }
     
-    // MARK: - Private Metods
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        taskView.becomeFirstResponder()
+    }
+    
+    // MARK: - Configuration Methods
+    private func setupViewController() {
+        view.backgroundColor = .customBlack
+        configureView()
+        setupBindings()
+    }
+    
+    private func setupNavigationBar() {
+        navigationItem.largeTitleDisplayMode = .never
+        setupCustomBackButton()
+    }
+    
+    private func setupInitialContent() {
+        guard let taskText = taskText else { return }
+        parseAndSetInitialText(taskText)
+    }
+    
+    private func configureTextViewAppearance() {
+        let attributes: [NSAttributedString.Key: Any] = [
+            .font: UIFont.sfProText(.bold, size: 34),
+            .foregroundColor: UIColor.customWhite
+        ]
+        taskView.typingAttributes = attributes
+    }
+    
+    // MARK: - Private Methods
     private func setupCustomBackButton() {
-        var backBattonConfig = UIButton.Configuration.plain()
-        backBattonConfig.title = "Назад"
-        backBattonConfig.image = UIImage(systemName: "chevron.backward")
-        backBattonConfig.baseForegroundColor = .customYellow
-        backBattonConfig.imagePadding = 6
-        backBattonConfig.contentInsets = NSDirectionalEdgeInsets(
+        var backButtonConfig = UIButton.Configuration.plain()
+        backButtonConfig.title = "Назад"
+        backButtonConfig.image = UIImage(systemName: "chevron.backward")
+        backButtonConfig.baseForegroundColor = .customYellow
+        backButtonConfig.imagePadding = 6
+        backButtonConfig.contentInsets = NSDirectionalEdgeInsets(
             top: 11,
             leading: 0,
             bottom: 11,
             trailing: 0
         )
         
-        let backButton = UIButton(configuration: backBattonConfig)
+        let backButton = UIButton(configuration: backButtonConfig)
         backButton.addTarget(self, action: #selector(backButtonTapped), for: .touchUpInside)
         
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: backButton)
     }
+        
+    private func setupBindings() {
+        viewModel.$formattedText
+            .receive(on: RunLoop.main)
+            .sink { [weak self] attributedText in
+                guard let self = self else { return }
+                guard !self.taskView.isFirstResponder else { return }
+         
+                self.isTextViewUpdatingFromViewModel = true
+                let selectedRange = self.taskView.selectedRange
+                self.taskView.attributedText = attributedText
+                self.taskView.selectedRange = selectedRange
+                self.isTextViewUpdatingFromViewModel = false
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func parseAndSetInitialText(_ text: String) {
+        let lines = text.split(separator: "\n", maxSplits: 1, omittingEmptySubsequences: false)
+        
+        if let firstLine = lines.first {
+            viewModel.title = String(firstLine)
+        }
+        
+        if lines.count > 1 {
+            viewModel.description = String(lines[1])
+        }
+    }
+    
+    private func updateViewModelFromTextView() {
+        let text = taskView.text
+        guard let lines = text?.split(separator: "\n", maxSplits: 1, omittingEmptySubsequences: false) else {return}
+        
+        if let firstLine = lines.first {
+            viewModel.title = String(firstLine)
+        } else {
+            viewModel.title = ""
+        }
+        
+        if lines.count > 1 {
+            viewModel.description = String(lines[1])
+        } else {
+            viewModel.description = ""
+        }
+    }
     
     @objc
     private func backButtonTapped() {
-        let trimmedText = taskView.text?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        updateViewModelFromTextView()
+        
+        let fullText = viewModel.title + (viewModel.description.isEmpty ? "" : "\n" + viewModel.description)
+        let trimmedText = fullText.trimmingCharacters(in: .whitespacesAndNewlines)
         
         switch (trimmedText.isEmpty, index) {
-        case (true, _): // Если текст пустой, просто закрыть экран
+        case (true, _):
             navigationController?.popViewController(animated: true)
             
-        case (false, let index?): // Обновление существующей задачи
+        case (false, let index?):
             delegate?.didUpdateTask(at: index, with: trimmedText)
             navigationController?.popViewController(animated: true)
             
-        case (false, nil): // Создание новой задачи
+        case (false, nil):
             delegate?.didCreateTask(task: trimmedText)
             navigationController?.popViewController(animated: true)
         }
@@ -90,109 +171,40 @@ extension TaskViewController: ViewConfigurable {
     
     func addConstraints() {
         NSLayoutConstraint.activate([
-            
             taskView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             taskView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             taskView.topAnchor.constraint(equalTo: view.topAnchor, constant: 112),
             taskView.heightAnchor.constraint(equalToConstant: 147)
         ])
     }
-    
 }
 
 // MARK: - UITextViewDelegate
 extension TaskViewController: UITextViewDelegate {
     func textViewDidChange(_ textView: UITextView) {
-        // Обновление текста при редактировании
-        formatTextView(textView)
+        guard !isTextViewUpdatingFromViewModel else { return }
+        updateViewModelFromTextView()
     }
     
     func textViewDidBeginEditing(_ textView: UITextView) {
-        // Если текст пустой, задаем заголовок
-        if textView.text.isEmpty {
-            let placeholderText = NSMutableAttributedString(
-                string: "",
-                attributes: [.font: UIFont.sfProText(.bold, size: 34)]
-            )
-            textView.attributedText = placeholderText
-        }
+        // Устанавливаем атрибуты для заголовка при начале редактирования
+        let attributes: [NSAttributedString.Key: Any] = [
+            .font: UIFont.sfProText(.bold, size: 34),
+            .foregroundColor: UIColor.customWhite
+        ]
+        textView.typingAttributes = attributes
     }
     
-    func formatTextView(_ textView: UITextView) {
-        // Сохраняем текущую позицию курсора
-        let selectedRange = textView.selectedRange
-        
-        // Разделяем текст на строки
-        let lines = textView.text.split(separator: "\n", maxSplits: 1, omittingEmptySubsequences: false)
-        
-        let attributedText = NSMutableAttributedString()
-        
-        // Форматирование заголовка
-        if let title = lines.first {
-            attributedText.append(
-                NSAttributedString(
-                    string: String(title),
-                    attributes: [
-                        .font: UIFont.sfProText(.bold, size: 34), // Заголовок жирным
-                        .foregroundColor: UIColor.customWhite
-                    ]
-                )
-            )
+    func textView(_ textView: UITextView,
+                  shouldChangeTextIn range: NSRange,
+                  replacementText text: String) -> Bool {
+        if text == "\n" {
+            let attributes: [NSAttributedString.Key: Any] = [
+                .font: UIFont.systemFont(ofSize: 16),
+                .foregroundColor: UIColor.customWhite
+            ]
+            textView.typingAttributes = attributes
         }
-        
-        // Форматирование описания
-        if lines.count > 1 {
-            attributedText.append(NSAttributedString(string: "\n"))
-            
-            // Форматируем описание с проверкой на даты
-            let descriptionText = String(lines[1])
-            let formattedDescription = formatDatesInText(descriptionText)
-            attributedText.append(formattedDescription)
-        }
-        
-        // Обновляем текстовое поле
-        textView.attributedText = attributedText
-        
-        // Восстанавливаем позицию курсора
-        textView.selectedRange = selectedRange
-    }
-    
-    private func formatDatesInText(_ text: String) -> NSAttributedString {
-        let words = text.split(separator: " ")
-        let attributedText = NSMutableAttributedString()
-        
-        for word in words {
-            if isValidDate(String(word)) {
-                // Если это дата, добавляем ее серым цветом
-                attributedText.append(
-                    NSAttributedString(
-                        string: "\(word) ",
-                        attributes: [
-                            .font: UIFont.systemFont(ofSize: 16),
-                            .foregroundColor: UIColor.stroke
-                        ]
-                    )
-                )
-            } else {
-                // Остальной текст обычным цветом
-                attributedText.append(
-                    NSAttributedString(
-                        string: "\(word) ",
-                        attributes: [
-                            .font: UIFont.systemFont(ofSize: 16),
-                            .foregroundColor: UIColor.customWhite
-                        ]
-                    )
-                )
-            }
-        }
-        
-        return attributedText
-    }
-    
-    private func isValidDate(_ text: String) -> Bool {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "dd.MM.yyyy" // Формат даты
-        return dateFormatter.date(from: text) != nil
+        return true
     }
 }
