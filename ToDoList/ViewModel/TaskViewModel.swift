@@ -57,17 +57,6 @@ final class TaskViewModel: ObservableObject {
     }
     
     private func formatTextWithDates(_ text: String) -> NSAttributedString {
-        let attributedString = NSMutableAttributedString(
-            string: text,
-            attributes: Self.normalAttributes
-        )
-        if let regex = try? NSRegularExpression(pattern: "\\b\\d{2}\\.\\d{2}\\.\\d{4}\\b") {
-            let matches = regex.matches(in: text,
-                                        range: NSRange(location: 0, length: text.utf16.count))
-            for match in matches {
-                attributedString.addAttributes(Self.dateAttributes, range: match.range)
-            }
-        }
-        return attributedString
+        return TextFormatterService.shared.formatTaskText(text)
     }
 }
