@@ -49,6 +49,11 @@ final class ToDoTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        contentView.backgroundColor = .customBlack
+    }
+    
     // MARK: - Method Configuration Cell
     func configure(with task: Task, at indexPath: IndexPath) {
         self.taskName = task.taskName
@@ -56,6 +61,12 @@ final class ToDoTableViewCell: UITableViewCell {
         
         updateUIForCompletionState()
         self.indexPath = indexPath
+    }
+    
+    func setHighlightedBackground(_ highlighted: Bool) {
+        UIView.animate(withDuration: 0.2,delay: 0,options: .curveEaseInOut) {
+            self.contentView.backgroundColor = highlighted ? .customBlack : .customGray
+        }
     }
     
     // MARK: - UI Updates

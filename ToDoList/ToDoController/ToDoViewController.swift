@@ -277,7 +277,6 @@ extension ToDoViewController: UITableViewDataSource {
             let task = self.viewModel.filteredTasks[indexPath.row]
             task.isCompleted = isCompleted
             CoreDataManager.shared.saveContext()
-            tableView.reloadRows(at: [indexPath], with: .automatic)
         }
         return cell
     }
@@ -298,6 +297,21 @@ extension ToDoViewController: UITableViewDataSource {
 
 // MARK: - UITableViewDelegate
 extension ToDoViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView,
+                       willBeginContextMenuInteractionForRowAt indexPath: IndexPath,
+                       point: CGPoint) {
+            guard let cell = tableView.cellForRow(at: indexPath) as? ToDoTableViewCell else { return }
+            cell.setHighlightedBackground(true)
+        }
+
+        func tableView(_ tableView: UITableView,
+                       willEndContextMenuInteractionForRowAt indexPath: IndexPath,
+                       point: CGPoint) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                guard let cell = tableView.cellForRow(at: indexPath) as? ToDoTableViewCell else { return }
+                cell.setHighlightedBackground(false)
+            }
+        }
     
     func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
         return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
