@@ -2,51 +2,72 @@
 //  TaskViewModel.swift
 //  ToDoList
 //
-//  Created by Дмитрий Жуков on 1/4/25.
+//  Created by Дмитрий Жуков on 9/8/25.
 //
 
-import Foundation
+import Combine
 import UIKit
 
-final class TaskViewModel {
-    var task = CoreDataManager.shared.fetchTasks()
+final class TaskViewModel: ObservableObject {
+    @Published var title: String = "" {
+        didSet {
+            updateFormattedText()
+        }
+    }
+    @Published var description: String = "" {
+        didSet {
+            updateFormattedText()
+        }
+    }
+    @Published private(set) var formattedText: NSAttributedString = NSAttributedString()
     
-    func addTask(taskName: String, isCompleted: Bool = false) {
-        CoreDataManager.shared.addTask(taskName: taskName, isCompleted: isCompleted)
-        task = CoreDataManager.shared.fetchTasks()
-        
+    private static let dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd.MM.yyyy"
+        return formatter
+    }()
+    
+    private static let titleAttributes: [NSAttributedString.Key: Any] = [
+        .font: UIFont.sfProText(.bold, size: 34),
+        .foregroundColor: UIColor.customWhite
+    ]
+    private static let normalAttributes: [NSAttributedString.Key: Any] = [
+        .font: UIFont.systemFont(ofSize: 16),
+        .foregroundColor: UIColor.customWhite
+    ]
+    private static let dateAttributes: [NSAttributedString.Key: Any] = [
+        .font: UIFont.systemFont(ofSize: 16),
+        .foregroundColor: UIColor.stroke
+    ]
+    
+    init() {
+        updateFormattedText()
     }
     
-    func removeTask(at index: Int) {
-        let taskToRemove = task[index]
-        CoreDataManager.shared.deleteTask(task: taskToRemove)
-        task.remove(at: index)
+    private func updateFormattedText() {
+        let attributedText = NSMutableAttributedString(
+            string: title,
+            attributes: Self.titleAttributes
+        )
+        if !description.isEmpty {
+            attributedText.append(NSAttributedString(string: "\n"))
+            attributedText.append(formatTextWithDates(description))
+        }
+        formattedText = attributedText
     }
     
-    func updateTask(at index: Int, with newName: String) {
-        let taskToUpdate = task[index]
-        CoreDataManager.shared.updateTask(task: taskToUpdate, with: newName)
-        task = CoreDataManager.shared.fetchTasks() // Обновляем массив задач
-    }
-    
-    func syncTasksFromAPI(completion: @escaping (Error?) -> Void) {
-            TaskService().fetchTodos { result in
-                switch result {
-                case .success(let tasks):
-                    DispatchQueue.global(qos: .background).async {
-                        for taskModel in tasks {
-                            if !CoreDataManager.shared.isTaskExists(withID: Int64(taskModel.id)) {
-                                CoreDataManager.shared.addTaskFromAPI(taskModel: taskModel)
-                            }
-                        }
-                        self.task = CoreDataManager.shared.fetchTasks()
-                        DispatchQueue.main.async {
-                            completion(nil)
-                        }
-                    }
-                case .failure(let error):
-                    completion(error)
-                }
+    private func formatTextWithDates(_ text: String) -> NSAttributedString {
+        let attributedString = NSMutableAttributedString(
+            string: text,
+            attributes: Self.normalAttributes
+        )
+        if let regex = try? NSRegularExpression(pattern: "\\b\\d{2}\\.\\d{2}\\.\\d{4}\\b") {
+            let matches = regex.matches(in: text,
+                                        range: NSRange(location: 0, length: text.utf16.count))
+            for match in matches {
+                attributedString.addAttributes(Self.dateAttributes, range: match.range)
             }
         }
+        return attributedString
+    }
 }
