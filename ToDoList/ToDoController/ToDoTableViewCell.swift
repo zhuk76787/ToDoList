@@ -16,7 +16,7 @@ final class ToDoTableViewCell: UITableViewCell {
     // MARK: - UI Elements
     private lazy var checkButton: UIButton = {
         let button = UIButton()
-        button.setImage(UIImage(systemName: "circle"), for: .normal)
+        button.setImage(UIImage(named: "circle"), for: .normal)
         button.tintColor = .stroke
         button.addTarget(self, action: #selector(didTapCheckButton), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -41,6 +41,7 @@ final class ToDoTableViewCell: UITableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         backgroundColor = .customBlack
         separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
+        selectionStyle = .none
         configureView()
     }
     
@@ -59,8 +60,8 @@ final class ToDoTableViewCell: UITableViewCell {
     
     // MARK: - UI Updates
     private func updateUIForCompletionState() {
-        let buttonImage = isTaskCompleted ? "checkmark.circle.fill" : "circle"
-        checkButton.setImage(UIImage(systemName: buttonImage), for: .normal)
+        let buttonImage = isTaskCompleted ? "checkCircle" : "circle"
+        checkButton.setImage(UIImage(named: buttonImage), for: .normal)
         checkButton.tintColor = isTaskCompleted ? .customYellow : .stroke
         
         guard let taskName = taskName else { return }
@@ -68,24 +69,33 @@ final class ToDoTableViewCell: UITableViewCell {
         let title = components.first ?? ""
         let descriptionAndDate = components.dropFirst().joined(separator: "\n")
         
-        let attributedText = NSMutableAttributedString(
-            string: "\(title)\n",
-            attributes: [
-                .font: UIFont.sfProText(.bold, size: 16),
-                .foregroundColor: isTaskCompleted ? UIColor.stroke : UIColor.customWhite
+        let attributedText = NSMutableAttributedString()
+        
+        let titleAttributes: [NSAttributedString.Key: Any] = [
+            .font: UIFont.sfProText(.bold, size: 16),
+            .foregroundColor: isTaskCompleted ? UIColor.stroke : UIColor.customWhite
             ]
-        )
+        
+        let titleString = NSAttributedString(string: title, attributes: titleAttributes)
+    
+        if isTaskCompleted {
+              let strikethroughTitle = NSMutableAttributedString(attributedString: titleString)
+              strikethroughTitle.addAttribute(
+                  .strikethroughStyle,
+                  value: NSUnderlineStyle.single.rawValue,
+                  range: NSRange(location: 0, length: title.count)
+              )
+              attributedText.append(strikethroughTitle)
+          } else {
+              attributedText.append(titleString)
+          }
+        
         if !descriptionAndDate.isEmpty {
+        attributedText.append(NSAttributedString(string: "\n"))
             let formattedDescription = formatDescriptionText(descriptionAndDate, isCompleted: isTaskCompleted)
             attributedText.append(formattedDescription)
         }
-        if isTaskCompleted {
-            attributedText.addAttributes(
-                [.strikethroughStyle: NSUnderlineStyle.single.rawValue],
-                range: NSRange(location: 0, length: attributedText.length)
-            )
-        }
-        taskLabel.attributedText = attributedText
+               taskLabel.attributedText = attributedText
     }
     
     private func formatDescriptionText(_ text: String, isCompleted: Bool) -> NSAttributedString {
